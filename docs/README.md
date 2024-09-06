@@ -21,7 +21,7 @@
 - Resonse is a semantic JSON
 - Checkings must be based on `success`
 
-```J
+```JS
 {
     "success" : true || false,
     "message" : "...",
