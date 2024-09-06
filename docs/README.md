@@ -34,12 +34,10 @@
 ## Endpoints
 
 **Users**
--  **POST /users** (PUBLIC): Creates a new user. [doc](./endpoints/user/createUser.md)
+-  **Create User**: Creates a new user. [`POST /users`](./endpoints/user/createUser.md)
 
 **Auth**
-
--  **POST /auth** (PUBLIC): Log a user in. [doc](./endpoints/auth/loginUser.md)
--  **GET /auth**: Check user authentication and get user. [doc](./endpoints/auth/getUser.md)
--  **GET /auth/email**: Send email verification. [doc](./endpoints/auth/verifyEmail.md)
--  **POST /auth/email**: Confirm email verification. [doc](./endpoints/auth/confrmEmail.md)
-
+-  **Log User In**: Log a user in. [`POST /auth`](./endpoints/auth/loginUser.md)
+-  **Get User**: Check user authentication and get user. [`GET /auth`](./endpoints/auth/getUser.md)
+-  **Send Email Verification**: Send email verification. [`GET /auth/email`](./endpoints/auth/verifyEmail.md)
+-  **Confirm Email Verification**: Confirm email verification. [`POST /auth/email`](./endpoints/auth/confirmEmail.md)
