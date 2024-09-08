@@ -1,13 +1,13 @@
-[⟵ Back home](./README.md)
+[⟵ Back home](../README.md)
 
 # Documentation
 
 ## API
 
-[User management](./v1/user-management.md)
-[User authentication](./v1/user-authentication.md)
-[Email verification](./v1/email-verification.md)
-[Password reset](./v1/password-reset.md)
+- [User management](./v1/user-management.md)
+- [User authentication](./v1/user-authentication.md)
+- [Email verification](./v1/email-verification.md)
+- [Password reset](./v1/password-reset.md)
 
 ## Guide
 
