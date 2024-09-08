@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { capitalize } from "./helpers.js";
 
 export class Issue {
@@ -66,6 +67,23 @@ export class Exception {
 
 
 /// Validation
+export class Validation {
+    static run = (v, s) => {
+        try {
+            const { success, data, error } = s.safeParse(v);
+            if (!success) {
+                const errors = error.issues.map(issue => ({ field: issue.path?.[0], message: issue.message }));
+                throw new Issue.Validation(errors);
+            } else {
+                return data;
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+    static obj = (v, s = {}) => this.run(v, z.object(s).required());
+}
+
 
 export const Validate = (v, s) => {
     const { success, data, error } = s.safeParse(v);

@@ -8,7 +8,8 @@ const jwtPrivate = process.env.JWT_PRIVATE;
 export default class Token {
 
     static schema = class {
-        static token = z.string().regex(/^[\w-]+\.[\w-]+\.[\w-]+$/)
+        static token = z.string().regex(/^[\w-]+\.[\w-]+\.[\w-]+$/);
+        static bearerAuthorization = z.string().refine((value) => value.startsWith('Bearer '))
 
         static accessToken = z.object({
             authorization: z.string().refine((value) => value.startsWith('Bearer '))
@@ -17,8 +18,6 @@ export default class Token {
         static emailToken = z.object({
             emailToken: this.token
         }).required();
-
-
     }
 
     static lifetime = {
@@ -26,14 +25,14 @@ export default class Token {
         access: "7d",
         accessExtended: "30d",
         email: "30m",
-        password: "30m",
+        reset: "30m",
     }
 
     static subject = {
         default: "custom",
         access: "access",
         email: "email",
-        password: "password",
+        reset: "password",
     }
 
     static generate = async (subject, data = {}, lifetime) => {
@@ -66,9 +65,9 @@ export default class Token {
 
     static generateAccessToken = (user, rememberMe) => this.generate(this.subject.access, { user }, rememberMe ? this.lifetime.accessExtended : this.lifetime.access);
     static generateEmailToken = (id, email) => this.generate(this.subject.email, { id, email }, this.lifetime.email);
-    // static generatePasswordToken = (user) => this.generate(this.subject.password, { user }, this.lifetime.password);
+    static generateResetToken = (id, email) => this.generate(this.subject.reset, { id, email }, this.lifetime.reset);
 
     static decodeAccessToken = (token) => Token.parse(this.subject.access, token);
     static decodeEmailToken = (token) => Token.parse(this.subject.email, token);
-    // static decodePasswordToken = (token) => Token.parse(this.subject.password, token);
+    static decodeResetToken = (token) => Token.parse(this.subject.reset, token);
 }

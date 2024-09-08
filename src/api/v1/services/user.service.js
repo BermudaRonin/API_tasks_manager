@@ -34,9 +34,30 @@ const UserModel = model("User", new Schema({
 export default class User {
 
     static schema = class {
-        static email = z.string();
-        static username = z.string();
-        static password = z.string();
+        // Enhance ValidationError = field, condition, message
+        static email = z
+            .string({ message: "Email must be a string" })
+            .email("Wrong email address format")
+            .min(8, "Email must be 8 chars min")
+            .max(50, "Email must be 50 chars max")
+            .toLowerCase()
+            .trim()
+
+
+        static username = z
+            .string({ message: "Username must be a string" })
+            .min(6, "Username must be 6 chars min")
+            .max(50, "Username must be 50 chars max")
+            .toLowerCase()
+            .trim()
+
+        static password = z
+            .string()
+            .regex(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/, "Password must include at least 1 special character")
+            .regex(/^(?=.*\d).*$/, "Password must  include at least 1 number")
+            .regex(/^(?=.*[A-Z]).*$/, "Password must include at least 1 uppercase letter")
+            .min(8, "Password must be 8 chars min")
+            .max(50, "Password must be 50 chars max")
 
         static register = z.object({
             email: this.email,

@@ -33,21 +33,16 @@ export default class EmailVerification {
                 return res.status(200).json(new ResponseSuccess("Email already verified"))
             }
 
-
             const params = await Validate(req.params, Token.schema.emailToken);
-
-            console.log({ params });
 
             const { emailToken } = params
             const { data, sub } = await Token.decodeAccessToken(emailToken);
-
-            console.log({ data, sub });
-
 
             // Compare token data 
             const conditions = [
                 data.id == user.id,
                 data.email == user.email,
+                sub == Token.subject.email
             ]
 
             if (conditions.includes(false)) {
