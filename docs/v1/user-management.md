@@ -7,7 +7,6 @@
 
 Creates a user and generate an access token.
 
-
 <details>
 <summary>Request body</summary>
 <br />
@@ -57,6 +56,68 @@ Creates a user and generate an access token.
 
 
 ## Update user
+### 🔒 `PUT /user`
+
+Updates user data.
+
+<details>
+<summary>Request body</summary>
+<br />
+
+```JSON
+{
+    "username": "...",
+    "email": "...",
+    "password": "..."
+}
+```
+
+| Field  | Type | Description | Required | Default Value |
+|---------|------|-------------|----------|---------------|
+| `username` | string | The new username. | false | - |
+| `email` | string | The new email. | false | - |
+| `password` | string | The new password. | false | - |
+
+<br />
+</details>
+
+<details>
+<summary>Response</summary>
+<br />
+
+☑️ **200** Success.
+
+- User updated.
+
+❎ **400** Validation error `has errors`
+
+- Bad Request.
+- Invalid credentials.
+
+❎ **500** Other errors
+
+- Database errors. 🚨
+- Encryption errors. 🚨
+- Server errors. 🚨
+
+</details>
 
 ## Delete user
+### 🔒 `DELETE /user`
 
+Delete user.
+
+<details>
+<summary>Response</summary>
+<br />
+
+☑️ **200** Success.
+
+- User deleted.
+
+❎ **500** Other errors
+
+- Database errors. 🚨
+- Server errors. 🚨
+
+</details>
