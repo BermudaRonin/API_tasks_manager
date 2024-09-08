@@ -73,6 +73,30 @@ export default class Database {
     }
 
 
+    static updateOne = async (model, query = {}, data = {}) => {
+        try {
+            const options = { new: true }
+
+            if (Object.keys(query).length > 0 && Object.keys(data).length > 0) {
+
+                let updated = null;
+
+                if (Object.keys(query).length == 1 && "id" in query) {
+                    updated = await model.findByIdAndUpdate(query.id, data, options);
+                } else if (Object.keys(query).length > 0) {
+                    updated = await model.findOneAndUpdate(query, data, options);
+                }
+
+                return updated;
+
+            } 
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
     static updateOrCreateOne = async (model, query = {}, data = {}) => {
         try {
             const options = { new: true, upsert: true, setDefaultsOnInsert: true }
@@ -87,7 +111,7 @@ export default class Database {
 
             return updatedOrCreated;
 
-        } catch (caught) {
+        } catch (error) {
             throw error;
         }
     }

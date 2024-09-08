@@ -15,7 +15,12 @@ export class Issue {
             super(400, "Validation error", errors)
         }
     }
-
+    static InvalidRequest = class InvalidRequestIssue extends this {
+        constructor(customMessage = "") {
+            const message = customMessage || "Invalid request"
+            super(500, message)
+        }
+    }
 
     // DATABASE
 

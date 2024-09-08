@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { object, z } from "zod"
 import { model, Schema } from "mongoose";
 
 import Database from "./database.service.js";
@@ -106,6 +106,31 @@ export default class User {
     static getOneByID = async (id, format = false) =>
         await Database.getOne("user", UserModel, { id }, format ? this.formatOne : null);
 
+
+    static updateOneByID = async (id, update = {}) => {
+        try {
+            const _update = {};
+
+            if (Object.keys(update).length === 0) return null;
+
+            if (update.password) {
+                _update.password = await Password.hash(update.password);
+                delete update.password; // remove password from original update object
+            }
+
+            // Copy non-password fields from update to _update
+            Object.assign(_update, update);
+
+            // Update user
+            const user = await Database.updateOne(UserModel, { id }, _update);
+
+            console.log({ user })
+            return user;
+
+        } catch (error) {
+            throw error
+        }
+    }
 
     static _updateOne = async (id, update) => await UserModel.findByIdAndUpdate(id, { ...update }, { new: true })
 
