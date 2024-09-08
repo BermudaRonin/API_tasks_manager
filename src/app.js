@@ -1,15 +1,15 @@
-import express from 'express';
-import Server from './server/server.service.js';
-import ServerMiddleware from './server/server.mw.js';
-import Database from './database/database.service.js';
+import Server from './server/services/server.service.js';
+import Logger from './server/services/logger.service.js';
+import Body from './server/services/body.service.js';
 import apiRoutes from './api/api.routes.js';
+import Database from './api/v1/services/database.service.js';
 
-const app = express();
+const app = Server.init();
 
 await Database.connect();
 
-app.use(ServerMiddleware.logs);
-app.use(ServerMiddleware.json);
+app.use(Logger.dev);
+app.use(Body.json);
 
 app.get("/", (req, res) => res.send("Server ON !"));
 

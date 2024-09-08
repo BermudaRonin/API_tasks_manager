@@ -1,77 +1,74 @@
-import OperationFailure from '../../../utils/espress/operation.js';
-import config from '../version.config.js';
 import nodemailer from 'nodemailer';
+import { Issue } from '../utils/index.js';
 
-export const mailer = nodemailer.createTransport(config.mailer);
+const config = {
+    service: {
+        host: "sandbox.smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+            user: process.env.MAILTRAP_USER,
+            pass: process.env.MAILTRAP_PASSWORD
+        }
+    },
+    defaultSender: "bermudaronin@gmail.com"
+}
+
+const frontendlink = "/frontend";
+
+const templates = {
+    emailVerification: (user, token) => `
+    <html>
+        <head>
+            <title>Email Verification</title>
+        </head>
+        <body>
+            <h2>Email Verification</h2>
+            <p>Dear ${user.username},</p>
+            <p>We've received a request to verify your email. To complete the process, please click on the following link:</p>
+            <a href="${frontendlink}/verify-email?token=${token}" class="button">Verify Email</a>
+            <i>The link will expire in 30 minutes</i>
+        </body>
+    </html>
+    `,
+    passwordReset: (user, token) => `
+    <html>
+        <head>
+            <title>Email Verification</title>
+        </head>
+        <body>
+            <h2>Email Verification</h2>
+            <p>Dear ${user.username},</p>
+            <p>We've received a request to reset your password. To complete the process, please click on the following link:</p>
+            <a href="${frontendlink}/verify-password?token=${token}" class="button">Verify Email</a>
+            <i>The link will expire in 30 minutes</i>
+        </body>
+    </html>
+`
+}
 
 
-export class Mail {
-    static sender = "bermudaronin@gmail.com";
+export default class Mail {
+    static service = nodemailer.createTransport(config.service);
 
-    static url = {
-        emailVerification: "#",
-        passwordReset: "#", // ${process.env.FRONTEND_URL}/reset-password/${token}
-    }
-    static subject = {
-        emailVerification: "Email Verification",
-        passwordReset: "Password Reset",
-    }
-    static html = {
-        emailVerification: (user, pin) => `
-            <html>
-                <head>
-                    <title>Email Verification</title>
-                </head>
-                <body>
-                    <h2>Email Verification</h2>
-                    <p>Dear ${user.username},</p>
-                    <p>We're excited to have you on board! To complete your email verification, please enter the following PIN:</p>
-                    <h3>${pin}</h3>
-                    <p>Click on the following link to verify your email address:</p>
-                    <a href="${this.url.emailVerification}">Verify Email</a>
-                    <p>If you didn't request this verification, please ignore this email.</p>
-                    <p>Best regards,</p>
-                    <p>The Todos Team</p>
-                </body>
-            </html>
-        `,
-        passwordReset: (user) => `
-            <html>
-                <head>
-                    <title>Password Reset</title>
-                </head>
-                <body>
-                    <h2>Password Reset</h2>
-                    <p>Dear ${user.name},</p>
-                    <p>We've received a request to reset your password. To complete the process, please click on the following link:</p>
-                    <a href="${this.url.passwordReset}">Reset Password</a>
-                    <p>If you didn't request this reset, please ignore this email.</p>
-                    <p>Best regards,</p>
-                    <p>The Todos Team</p>
-                </body>
-            </html>
-        `
-    }
-    static sendMail = async (options = {}) => {
+    static async send(options = {}) {
+        const from = config.defaultSender;
         try {
-            await mailer.sendMail({ from: this.sender, ...options });
-        } catch (caught) {
-            console.log("CAUGHT ON EMAIL SENDING {sendMail}");
-            console.log(caught);
-            OperationFailure.autoCatch(caught);
+            await this.service.sendMail({ from, ...options });
+        } catch (error) {
+            throw new Issue.EmailNotSend();
         }
     }
 
-    static emailVerification = async (user, pin) => await this.sendMail({
+    static sendEmailToken = (user, emailToken) => this.send({
         to: user.email,
-        subject: this.subject.emailVerification,
-        html: this.html.emailVerification(user, pin),
+        subject: "Email verification",
+        html: templates.emailVerification(user, emailToken),
     })
 
-    static passwordReset = async (user) => await this.sendMail({
+    static sendPasswordToken = (user, passwordToken) => this.send({
         to: user.email,
-        subject: this.subject.emailVerification,
-        html: this.html.passwordReset(user),
+        subject: "Password reset",
+        html: templates.passwordReset(user, passwordToken),
     })
 
 }

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import versionRoutes from "./v1/routes/version.routes.js";
+import v1_routes from "./v1/versions.routes.js";
 
 const apiRoutes = Router();
 
 apiRoutes.get("/", (req, res) => res.send("API ON !"));
-apiRoutes.use("/v1", versionRoutes);
+apiRoutes.use("/v1", v1_routes);
 
 export default apiRoutes;
