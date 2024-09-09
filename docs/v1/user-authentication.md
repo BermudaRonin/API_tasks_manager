@@ -40,9 +40,7 @@ The user can choose to login by email/password or username/password.
 
 ❎ **400** Validation error `has errors`
 - Invalid credentials & options.
-
-❎ **404** Not found.
-- User not found.
+- Non existing email/passowrd.
 
 ❎ **500** Other errors
 - Database errors. 🚨
