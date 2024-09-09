@@ -35,23 +35,30 @@ export default class UserAuthentication {
 
             if ("username" in req.body) {
                 credentials = await Validate(req.body, User.schema.loginUsername, false);
-                user = await User.getOneByUsername(username);
+                user = await User.getOneByUsername(credentials.username);
+                if (!user) {
+                    throw new Issue.Validation([{ path: "username", message: "Username not found" }]);
+                }
             }
 
             if ("email" in req.body && !user) {
                 credentials = await Validate(req.body, User.schema.loginEmail, false);
                 user = await User.getOneByEmail(credentials.email);
+                if (!user) {
+                    throw new Issue.Validation([{ path: "email", message: "Email not found" }]);
+                }
             }
 
-            if (!user) {
-                throw new Issue.NotFound('user');
-            }
+            const match = await Password.compare(credentials.password, user.hashedPassword);
 
-            await Password.compare(credentials.password, user.hashedPassword);
+            if (!match) {
+                throw new Issue.Validation([{ path: "password", message: "Password incorrect" }]);
+            }
 
             user = User.formatOne(user);
 
             const accessToken = await Token.generateAccessToken(user, credentials.rememberMe);
+
             res.status(200).json(new ResponseSuccess("User logged", { accessToken, user }));
 
         } catch (error) {

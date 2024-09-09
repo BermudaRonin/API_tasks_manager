@@ -1,19 +1,7 @@
 import bcrypt from 'bcrypt';
+import { Exception } from '../utils/index.js';
 
-import { Issue, Exception } from '../utils/index.js';
-
-const saltRounds = parseInt(process.env.SALT_ROUNDS)
-
-export class PIN {
-    static generate = async () => {
-        try {
-            const pin = Math.floor(100000 + Math.random() * 900000).toString();
-            return pin;
-        } catch (error) {
-            throw new Exception("PIN.generate()", error);
-        }
-    };
-}
+const saltRounds = parseInt(process.env.SALT_ROUNDS);
 
 export default class Password {
 
@@ -27,22 +15,9 @@ export default class Password {
 
     static compare = async (plain, hashed) => {
         try {
-            const match = await bcrypt.compare(plain, hashed)
-            if (!match) {
-                throw new Issue.Validation({ field: "password", message: "Incorrect password" })
-            }
-            return match
+            return await bcrypt.compare(plain, hashed)
         } catch (error) {
             throw new Exception("Password.compare()", error);
-        }
-    };
-
-    static generate = async () => {
-        try {
-            const password = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-            return password;
-        } catch (error) {
-            throw new Exception("Password.generate()", error);
         }
     };
 

@@ -1,34 +1,9 @@
-import { object, z } from "zod"
-import { model, Schema } from "mongoose";
-
+import { z } from "zod"
 import Database from "./database.service.js";
 import Password from "./pass.service.js";
+import { Issue } from "../utils/index.js";
+import UserModel from "./models/user.model.js";
 
-const UserModel = model("User", new Schema({
-    username: {
-        type: Schema.Types.String,
-        required: true,
-        unique: true,
-        trim: true
-    },
-    email: {
-        type: Schema.Types.String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true
-    },
-    hashedPassword: {
-        type: Schema.Types.String,
-        required: true
-    },
-    emailVerified: {
-        type: Schema.Types.Boolean,
-        default: false
-    },
-}, {
-    timestamps: true
-}))
 
 
 export default class User {
@@ -58,6 +33,7 @@ export default class User {
             .regex(/^(?=.*[A-Z]).*$/, "Password must include at least 1 uppercase letter")
             .min(8, "Password must be 8 chars min")
             .max(50, "Password must be 50 chars max")
+            .trim()
 
         static register = z.object({
             email: this.email,
@@ -93,6 +69,14 @@ export default class User {
             const user = await Database.createOne("user", UserModel, data, format ? this.formatOne : null);
             return user;
         } catch (error) {
+            if (error.code === 11000) {
+                if (error.keyPattern.email) {
+                    throw new Issue.Duplicates({ field: "email", message: "Email already exists" });
+                } else if (error.keyPattern.username) {
+                    throw new Issue.Duplicates({ field: "username", message: "Username already exists" });
+                }
+                throw error;
+            }
             throw error;
         }
     }

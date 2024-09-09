@@ -30,25 +30,30 @@ export default class Database {
     static createOne = async (label, model, data = {}, format) => {
         try {
             const created = await model.create(data)
-            if (!created) {
-                throw new Issue.NotCreated(label);
-            }
+            // if (!created) {
+            //     throw new Issue.NotCreated(label);
+            // }
             return format ? format(created) : created;
 
         } catch (error) {
-            if (error.name == "MongoServerError" && error.code == 11000) {
-                // TODO: Get duplicated fields from the error; 
-                throw new Issue.Duplicates()
+            throw error;
+            // if (error.name == "MongoServerError" && error.code == 11000) {
+            //     // TODO: Get duplicated fields from the error; 
+            //     console.log(error.keyValue);
+            //     console.log(error.keyPattern);
+            //     console.log(error.index);
+            //     // console.log(error.errorResponse);
+            //     throw new Issue.Duplicates()
 
-            } else if (error.name == "ValidationError") {
+            // } else if (error.name == "ValidationError") {
 
-                throw new Exception(`Database.createOne(${label})`, error)
+            //     throw new Exception(`Database.createOne(${label})`, error)
 
-            } else {
+            // } else {
 
-                throw error;
+            //     throw error;
 
-            }
+            // }
         }
 
     }
@@ -64,11 +69,9 @@ export default class Database {
             }
 
             if (found) return format ? format(found) : found;
-
-            throw new Issue.NotFound(label);
-
+            return null
         } catch (error) {
-            throw error;
+            throw new Exception("Database.getOne()", error);
         }
     }
 
