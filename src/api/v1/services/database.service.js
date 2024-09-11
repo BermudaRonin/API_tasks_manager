@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 import { Issue, Exception } from '../utils/index.js';
 
 
@@ -9,6 +9,8 @@ const config = {
     clusterName: process.env.DB_CLUSTER_NAME,
     dbName: process.env.DB_NAME,
 }
+
+const modelExample = model();
 
 export default class Database {
 
@@ -92,7 +94,7 @@ export default class Database {
 
                 return updated;
 
-            } 
+            }
 
         } catch (error) {
             throw error;
@@ -119,5 +121,13 @@ export default class Database {
         }
     }
 
+    static getAll = async (model = modelExample) => {
+        try {
+            const list = await model.find();
+            return list;
+        } catch (error) {
+            throw error
+        }
+    }
 
 }
